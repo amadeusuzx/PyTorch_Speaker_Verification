@@ -81,5 +81,5 @@ class SpeakerDatasetTIMITPreprocessed(Dataset):
 
         #utterance = utterance[:,:,:160]               # TODO implement variable length batch size
 
-        utterance = torch.tensor(utterance))     # transpose [batch, frames, n_mels]
+        utterance = torch.tensor(utterance)     # transpose [batch, frames, n_mels]
         return utterance
