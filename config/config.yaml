@@ -12,7 +12,7 @@ data:
     nfft: 512 #For mel spectrogram preprocess
     window: 0.025 #(s)
     hop: 0.01 #(s)
-    nmels: 40 #Number of mel energies
+    nmels: 80 #Number of mel energies
     tisv_frame: 180 #Max number of time steps in input after preprocess
 ---   
 model:
