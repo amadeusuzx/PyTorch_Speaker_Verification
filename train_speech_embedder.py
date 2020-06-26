@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from hparam import hparam as hp
 from data_load import SpeakerDatasetTIMIT, SpeakerDatasetTIMITPreprocessed
-from speech_embedder_net import SpeechEmbedder, GE2ELoss, get_centroids, get_cossim
+from speech_embedder_net import SpeechEmbedder, GE2ELoss, get_centroids, get_cossim, R2Plus1DNet
 
 def train(model_path):
     device = torch.device(hp.device)
@@ -25,7 +25,7 @@ def train(model_path):
         train_dataset = SpeakerDatasetTIMIT()
     train_loader = DataLoader(train_dataset, batch_size=hp.train.N, shuffle=True, num_workers=hp.train.num_workers, drop_last=True) 
     
-    embedder_net = SpeechEmbedder().to(device)
+    embedder_net = R2Plus1DNet(layer_sizes=[2,2,2,2]).to(device)
     if hp.train.restore:
         embedder_net.load_state_dict(torch.load(model_path))
     ge2e_loss = GE2ELoss(device)

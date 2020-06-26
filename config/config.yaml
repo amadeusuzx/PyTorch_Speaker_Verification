@@ -1,19 +1,12 @@
 training: !!bool "true"
 device: "cuda"
-unprocessed_data: './TIMIT/*/*/*/*.wav'
+
 ---
 data:
     train_path: './train_tisv'
-    train_path_unprocessed: './TIMIT/TRAIN/*/*/*.wav'
     test_path: './test_tisv'
     test_path_unprocessed: './TIMIT/TEST/*/*/*.wav'
     data_preprocessed: !!bool "true" 
-    sr: 16000
-    nfft: 512 #For mel spectrogram preprocess
-    window: 0.025 #(s)
-    hop: 0.01 #(s)
-    nmels: 80 #Number of mel energies
-    tisv_frame: 180 #Max number of time steps in input after preprocess
 ---   
 model:
     hidden: 768 #Number of LSTM hidden layer units
