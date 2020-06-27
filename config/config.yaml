@@ -11,7 +11,7 @@ data:
 model:
     hidden: 768 #Number of LSTM hidden layer units
     num_layer: 3 #Number of LSTM layers
-    proj: 256 #Embedding size
+    proj: 512 #Embedding size
     model_path: './model.model' #Model path for testing, inference, or resuming training
 ---
 train:

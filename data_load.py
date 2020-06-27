@@ -56,7 +56,7 @@ class SpeakerDatasetTIMITPreprocessed(Dataset):
         else:
             self.path = hp.data.test_path
             self.utter_num = hp.test.M
-        self.file_list = os.listdir(self.path)
+        self.file_list = [b for b in os.listdir(self.path) if b[0] != "."]
         self.shuffle=shuffle
         self.utter_start = utter_start
         
@@ -64,22 +64,19 @@ class SpeakerDatasetTIMITPreprocessed(Dataset):
         return len(self.file_list)
 
     def __getitem__(self, idx):
-        
-        np_file_list = os.listdir(self.path)
-        
-        if self.shuffle:
-            selected_file = random.sample(np_file_list, 1)[0]  # select random speaker
-        else:
-            selected_file = np_file_list[idx]               
-        
-        utters = np.load(os.path.join(self.path, selected_file))        # load utterance spectrogram of selected speaker
-        if self.shuffle:
-            utter_index = np.random.randint(0, utters.shape[0], self.utter_num)   # select M utterances per speaker
-            utterance = utters[utter_index]       
-        else:
-            utterance = utters[self.utter_start: self.utter_start+self.utter_num] # utterances of a speaker [batch(M), n_mels, frames]
 
-        #utterance = utterance[:,:,:160]               # TODO implement variable length batch size
 
-        utterance = torch.tensor(utterance)     # transpose [batch, frames, n_mels]
-        return utterance
+        np_file_dir = [b for b in os.listdir(self.path) if b[0] != "."]
+        selected_dir = random.sample(np_file_dir, 1)[0]  # select random speaker          
+        np_file_list = os.listdir(os.path.join(self.path+selected_dir))
+        selected_file = random.sample(np_file_list,self.utter_num)
+        utters = []
+        for s in selected_file:
+            frames = np.load(os.path.join(selected_dir,s))
+            utters.append(self.crop(frames,32))
+        utters = torch.tensor(np.array(utters))
+        return utters
+    def crop(self, buffer, clip_len):
+        time_index = np.random.randint(buffer.shape[1] - clip_len)
+        buffer = buffer[:,time_index:time_index + clip_len,:,:]
+        return buffer   
