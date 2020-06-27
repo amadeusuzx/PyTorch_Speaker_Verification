@@ -68,11 +68,11 @@ class SpeakerDatasetTIMITPreprocessed(Dataset):
 
         np_file_dir = [b for b in os.listdir(self.path) if b[0] != "."]
         selected_dir = random.sample(np_file_dir, 1)[0]  # select random speaker          
-        np_file_list = os.listdir(os.path.join(self.path+selected_dir))
+        np_file_list = os.listdir(os.path.join(self.path,selected_dir))
         selected_file = random.sample(np_file_list,self.utter_num)
         utters = []
         for s in selected_file:
-            frames = np.load(os.path.join(selected_dir,s))
+            frames = np.load(os.path.join(self.path,selected_dir,s))
             utters.append(self.crop(frames,32))
         utters = torch.tensor(np.array(utters))
         return utters

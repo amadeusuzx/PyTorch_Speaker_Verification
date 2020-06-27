@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 
 from hparam import hparam as hp
 from data_load import SpeakerDatasetTIMIT, SpeakerDatasetTIMITPreprocessed
-from speech_embedder_net import SpeechEmbedder, GE2ELoss, get_centroids, get_cossim, R2Plus1DNet
+from speech_embedder_net import  GE2ELoss, get_centroids, get_cossim, R2Plus1DNet
 
 def train(model_path):
     device = torch.device(hp.device)
@@ -41,20 +41,13 @@ def train(model_path):
     iteration = 0
     for e in range(hp.train.epochs):
         total_loss = 0
-        for batch_id, mel_db_batch in enumerate(train_loader): 
-            mel_db_batch = mel_db_batch.to(device)
-            
-            mel_db_batch = torch.reshape(mel_db_batch, (hp.train.N*hp.train.M, mel_db_batch.size(2), mel_db_batch.size(3)))
-            perm = random.sample(range(0, hp.train.N*hp.train.M), hp.train.N*hp.train.M)
-            unperm = list(perm)
-            for i,j in enumerate(perm):
-                unperm[j] = i
-            mel_db_batch = mel_db_batch[perm]
+        for batch_id, utters_batch in enumerate(train_loader): 
+            utters_batch = utters_batch.to(device)
+            utters_batch = torch.reshape(utters_batch, (hp.train.N*hp.train.M,utters_batch.size(2),utters_batch.size(3),utters_batch.size(4),utters_batch.size(5)))
             #gradient accumulates
             optimizer.zero_grad()
             
-            embeddings = embedder_net(mel_db_batch)
-            embeddings = embeddings[unperm]
+            embeddings = embedder_net(utters_batch)
             embeddings = torch.reshape(embeddings, (hp.train.N, hp.train.M, embeddings.size(1)))
             
             #get loss, call backward, step optimizer
@@ -97,7 +90,7 @@ def test(model_path):
         test_dataset = SpeakerDatasetTIMIT()
     test_loader = DataLoader(test_dataset, batch_size=hp.test.N, shuffle=True, num_workers=hp.test.num_workers, drop_last=True)
     
-    embedder_net = SpeechEmbedder()
+    embedder_net = R2Plus1DNet([2,2,2,2])
     embedder_net.load_state_dict(torch.load(model_path))
     embedder_net.eval()
     
