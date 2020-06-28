@@ -17,6 +17,7 @@ from data_load import TestDataset, TrainDataset
 from speech_embedder_net import GE2ELoss, get_centroids, get_cossim, R2Plus1DNet
 
 def train(model_path):
+    layer_sizes = [hp.model.res_layer for _ in range(hp.model.num_res-1)]
     device = torch.device(hp.device)
     
 
@@ -24,7 +25,7 @@ def train(model_path):
 
     train_loader = DataLoader(train_dataset, batch_size=hp.train.N, shuffle=True, num_workers=hp.train.num_workers, drop_last=True) 
     
-    embedder_net = R2Plus1DNet(layer_sizes=[2,2,2,2]).to(device)
+    embedder_net = R2Plus1DNet(layer_sizes).to(device)
     if hp.train.restore:
         embedder_net.load_state_dict(torch.load(model_path))
     ge2e_loss = GE2ELoss(device)
@@ -86,7 +87,7 @@ def test(model_path):
     test_dataset = TestDataset()
     test_loader = DataLoader(test_dataset, batch_size=hp.test.N, shuffle=True, num_workers=hp.test.num_workers, drop_last=True)
     
-    embedder_net = R2Plus1DNet([2,2,2,2]).to(device)
+    embedder_net = R2Plus1DNet(layer_sizes).to(device)
     embedder_net.load_state_dict(torch.load(model_path))
     embedder_net.eval()
     

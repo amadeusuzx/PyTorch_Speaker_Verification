@@ -9,9 +9,9 @@ data:
     data_preprocessed: !!bool "true" 
 ---   
 model:
-    hidden: 768 #Number of LSTM hidden layer units
-    num_layer: 3 #Number of LSTM layers
-    proj: 512 #Embedding size
+    num_res: 4 #Number of stcnn layers
+    res_layer: 2 #Num of res-block
+    proj: 256 #Embedding size
     model_path: './model.model' #Model path for testing, inference, or resuming training
 ---
 train:
