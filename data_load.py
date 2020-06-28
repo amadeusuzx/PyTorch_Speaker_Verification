@@ -18,8 +18,12 @@ class TrainDataset(Dataset):
     def __init__(self, shuffle=True, utter_start=0):
         
         # data path
-        self.path = hp.data.train_path
-        self.utter_num = hp.train.M
+        if hp.training:
+          self.path = hp.data.train_path
+          self.utter_num = hp.train.M
+        else:
+          self.path = hp.data.test_path
+          self.utter_num = hp.test.M
 
         self.file_list = [b for b in os.listdir(self.path) if b[0] != "."]
         self.shuffle=shuffle
@@ -38,7 +42,7 @@ class TrainDataset(Dataset):
         utters = []
         for s in selected_file:
             frames = np.load(os.path.join(self.path,selected_dir,s))
-            utters.append(self.crop(frames,32))
+            utters.append(frames)
         utters = torch.tensor(np.array(utters))
         return utters
     def crop(self, buffer, clip_len):
