@@ -3,6 +3,7 @@ device: "cuda"
 
 ---
 data:
+    dataset: './data_kimura_10words'
     train_path: './train_tisv'
     test_path: './test_tisv'
     test_path_unprocessed: './TIMIT/TEST/*/*/*.wav'
