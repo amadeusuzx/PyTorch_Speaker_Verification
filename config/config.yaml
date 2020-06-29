@@ -7,9 +7,7 @@ data:
     test_path: './test_tisv'
     test_path_unprocessed: './TIMIT/TEST/*/*/*.wav'
     data_preprocessed: !!bool "true"
-    embedding_dir: '/emb'
-    centroid_dir: './cent'
-    extract: 'centroid'
+    embedding_path: '/emb'
 ---   
 model:
     num_res: 5 #Number of stcnn layers

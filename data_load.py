@@ -36,15 +36,10 @@ class TrainDataset(Dataset):
 
 
         np_file_dir = [b for b in os.listdir(self.path) if b[0] != "."]
-        selected_dir = random.sample(np_file_dir, 1)[0]  # select random speaker          
-        np_file_list = [b for b in os.listdir(os.path.join(self.path,selected_dir)) if "emb" not in b]
-        selected_file = random.sample(np_file_list,self.utter_num)
-        utters = []
-        for s in selected_file:
-            frames = np.load(os.path.join(self.path,selected_dir,s))
-            utters.append(frames)
-        utters = torch.tensor(np.array(utters))
-        return utters
+        selected_file = random.sample(np_file_dir, 1)[0]  # select random speaker          
+        utterances = np.load(selected_file)
+        selected_utters = torch.tensor(random.sample(utterances,self.utter_num))
+        return selected_utters
     def crop(self, buffer, clip_len):
         time_index = np.random.randint(buffer.shape[1] - clip_len)
         buffer = buffer[:,time_index:time_index + clip_len,:,:]
@@ -57,7 +52,7 @@ class TestDataset(Dataset):
         
         # data path
  
-        self.path = hp.data.test_path
+        self.path = hp.data.embedding_path
         self.utter_num = hp.test.M
         self.file_list = [b for b in os.listdir(self.path) if b[0] != "."]
         self.shuffle=shuffle
@@ -67,14 +62,9 @@ class TestDataset(Dataset):
         return len(self.file_list)
 
     def __getitem__(self, idx):
-
-        np_file_dir = [b for b in os.listdir(self.path) if b[0] != "."]
-        selected_dir = random.sample(np_file_dir, 1)[0]  # select random speaker          
-        np_file_list = [b for b in os.listdir(os.path.join(self.path,selected_dir)) if "emb" in b]
-        selected_file = random.sample(np_file_list,self.utter_num)
-        embs = []
-        for s in selected_file:
-            emb = np.load(os.path.join(self.path,selected_dir,s))
-            embs.append(emb[0])
-        embs = torch.tensor(np.array(embs))
-        return embs
+        
+        np_file_dir = os.listdir(self.path)
+        selected_file = random.sample(np_file_dir, 1)[0]  # select random speaker          
+        embs = np.load(selected_file)
+        selected_embs = torch.tensor(random.sample(embs, self.utter_num))
+        return selected_embs 
