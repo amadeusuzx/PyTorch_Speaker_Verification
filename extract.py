@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from hparam import hparam as hp
 from speech_embedder_net import get_cossim, R2Plus1DNet
-
+import sys
 def extract(model_path,dataset):
     device = torch.device("cpu")
     embedder_net = R2Plus1DNet([2,2,2,2]).to(device)
@@ -31,4 +31,5 @@ def extract(model_path,dataset):
         np.save(os.path.join(save_path,d) + ".npy",buffer)
 
 if __name__ == "__main__":
-    extract(hp.model.model_path,dataset="train")
+    dataset = sys[1]
+    extract(hp.model.model_path,dataset)
