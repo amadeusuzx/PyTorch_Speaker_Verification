@@ -127,7 +127,11 @@ def calc_loss(sim_matrix):
     same_idx = list(range(sim_matrix.size(0)))
     pos = sim_matrix[same_idx, :, same_idx]
     neg = (torch.exp(sim_matrix).sum(dim=2) + 1e-6).log_()
-    per_embedding_loss = -1 * (pos - neg)
+    aggr = torch.zeros(sim_matrix.size(0),sim_matrix.size(1),sim_matrix.size(0)-1).to(hp.device)
+    for i in same_idx:
+        aggr[i] = sim_matrix[i,:, [b for b in same_idx if b!=i]]
+    max_aggr = aggr.max(dim=2).values 
+    per_embedding_loss = -1 * (pos - neg - hp.train.cont_loss * max_aggr)
     loss = per_embedding_loss.sum()
     return loss, per_embedding_loss
 

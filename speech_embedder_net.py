@@ -121,7 +121,7 @@ class R2Plus1DNet(nn.Module):
         # inside the first block
         self.conv3 = SpatioTemporalResLayer(64, 128, 3, layer_sizes[1], block_type=block_type, downsample=True)
         self.conv4 = SpatioTemporalResLayer(128, 256, 3, layer_sizes[2], block_type=block_type, downsample=True)
-        #self.conv5 = SpatioTemporalResLayer(256, 512, 3, layer_sizes[3], block_type=block_type, downsample=True)
+        self.conv5 = SpatioTemporalResLayer(256, 512, 3, layer_sizes[3], block_type=block_type, downsample=True)
 
         # global average pooling of the output
         self.pool = nn.AdaptiveAvgPool3d(1)
@@ -131,10 +131,10 @@ class R2Plus1DNet(nn.Module):
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
-        #x = self.conv5(x)
+        x = self.conv5(x)
 
         x = self.pool(x)
-        return x.view(-1, 256)
+        return x.view(-1, 512)
 
         
 
@@ -153,3 +153,4 @@ class GE2ELoss(nn.Module):
         sim_matrix = self.w*cossim.to(self.device) + self.b
         loss, _ = calc_loss(sim_matrix)
         return loss
+

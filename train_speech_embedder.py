@@ -63,7 +63,6 @@ def train(model_path):
             total_loss = total_loss + loss
             iteration += 1
             writer.add_scalar('loss', loss, global_step=iteration)
-            writer.add_scalar('Tloss', total_loss/(batch_id + 1), global_step=iteration)
             if (batch_id + 1) % hp.train.log_interval == 0:
                 mesg = "{0}\tEpoch:{1}[{2}/{3}],Iteration:{4}\tLoss:{5:.4f}\tTLoss:{6:.4f}\t\n".format(time.ctime(), e+1,
                         batch_id+1, len(train_dataset)//hp.train.N, iteration,loss, total_loss / (batch_id + 1))
@@ -91,6 +90,7 @@ def train(model_path):
 def test(model_path):
     layer_sizes = [hp.model.res_layer for _ in range(hp.model.num_res-1)]
     device = torch.device(hp.device)
+    #test_dataset = TestDataset()
     test_dataset = TrainDataset()
     test_loader = DataLoader(test_dataset, batch_size=hp.test.N, shuffle=True, num_workers=hp.test.num_workers, drop_last=True)
     
@@ -104,6 +104,8 @@ def test(model_path):
         for batch_id, utters_batch in enumerate(test_loader):
             assert hp.test.M % 2 == 0
             enrollment_batch, verification_batch = torch.split(utters_batch, int(utters_batch.size(1)/2), dim=1)
+            #enrollment_embeddings = enrollment_batch.to(device)
+            #verification_embeddings = verification_batch.to(device)
             enrollment_batch = enrollment_batch.to(device)
             verification_batch = verification_batch.to(device)
             enrollment_batch = torch.reshape(enrollment_batch, (hp.test.N*hp.test.M//2, enrollment_batch.size(2), enrollment_batch.size(3),enrollment_batch.size(4),enrollment_batch.size(5)))
@@ -114,7 +116,7 @@ def test(model_path):
 
             enrollment_embeddings = torch.reshape(enrollment_embeddings, (hp.test.N, hp.test.M//2, enrollment_embeddings.size(1)))
             verification_embeddings = torch.reshape(verification_embeddings, (hp.test.N, hp.test.M//2, verification_embeddings.size(1)))
-
+            
             enrollment_centroids = get_centroids(enrollment_embeddings)
             
             sim_matrix = get_cossim(verification_embeddings, enrollment_centroids)
